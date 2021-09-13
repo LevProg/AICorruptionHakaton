@@ -1,2 +1,4 @@
 # HakatonCorruption
-## This repository is loaded with a laptop with model training, an archive with an application
+### This is a project from the Hack AI hackathon
+### This repository is loaded with a notebook with model training, and application
+
