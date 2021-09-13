@@ -6,4 +6,5 @@
 ![alt text](https://github.com/LevProg/HakatonCorruption/blob/master/scrin1.png?raw=true)
 ### The application contains functions for downloading the file and its corrected version (with underlined "dangerous paragraphs"). There is also an implementation of viewing the corrected file directly in the application in the form of a pdf viewer.
 ![alt text](https://github.com/LevProg/HakatonCorruption/blob/master/scrin2.png?raw=true)
+#### Project structure: Main.py - main application script, research.ipynb - script training AI model, models.pickle - file containing the AI model and the Vectorizer, everything else - libraries / files needed to run the application
 
