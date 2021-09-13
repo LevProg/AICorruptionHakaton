@@ -28,7 +28,7 @@ def Classificate(filenam):
 def Predict():
     doc = docx.Document(filename)
     cnt=0
-    for paragraph in doc.paragraphs:
+    for paragraph in doc.paragraphs:#TODO: Simultaneous prediction for each paragraph in parallel, to improve processing time
         indicator = False
         for fac in best_fac:  
             par = paragraph.text
@@ -54,7 +54,7 @@ def Predict():
     word.Quit()
     v.display_file("new.pdf")
 
-    predictLabel.configure(text="Акт содержит: " + str(allCntOfCorruption) + " нарушени(е/й)", bg=_from_rgb((49,65,78)))
+    predictLabel.configure(text="The act contains: " + str(allCntOfCorruption) + " factors of corruption", bg=_from_rgb((49,65,78)))
     btn.pack(padx=30, pady=10,side='bottom',fill="x")
     predictLabel.pack(padx=30,pady=20,fill="both")
 
@@ -63,37 +63,40 @@ def _from_rgb(rgb):
 
 def choose_file():
     global filename
-    threadClassificate = threading.Thread(target=Predict)#создание потока для классификации
-    filetypes = (("Изображение", "*.doc *.docx"),
-            ("Текстовый файл", "*.txt"),
-            ("Любой", "*"))
-    filename = fd.askopenfilename(title="Открыть файл", initialdir="/",
+    threadClassificate = threading.Thread(target=Predict)#creating a stream for classification
+    filetypes = (("Document", "*.doc *.docx"),
+            ("Text", "*.txt"),
+            ("Any Files", "*"))
+    filename = fd.askopenfilename(title="Open file", initialdir="/",
                                 filetypes=filetypes)
     if filename:
         threadClassificate.run()
         
 def save_file():
     filename = fd.asksaveasfile(initialfile = 'new.docx',
-    defaultextension=".docx",filetypes=[("All Files","*.*"),("Text Documents","*.txt")])
+    defaultextension=".docx",filetypes=[("All Files","*.*"),("Document","*.docx")])
     print(filename.name)
     doc=docx.Document('new.docx')
     doc.save(filename.name)
 
 
 def window():
+    #creating window
     root = Tk()
     root["bg"] = _from_rgb((36,52,65))
-    root.geometry('1080x1080')
-    root.title("Детектор")
+    x = root.winfo_screenwidth()  # horizontal size
+    y = root.winfo_screenheight()  # vertical size
+    root.geometry('{}x{}'.format(int(x), int(y)))
+    root.title("Detector")
     mainFont = tkFont.Font(family="Impact", size=16)
 
+    #init all labels
     global predictLabel, predictImage, btn, v
     predictLabel = Label(root, text='',font=mainFont, fg=_from_rgb((41,221,209)),bg=_from_rgb((36,52,65)))
-    choseLabel = Label(root, text='Выберите документ для проверки на коррупционные факторы', fg=_from_rgb((41,221,209)),bg=_from_rgb((49,65,78)),font=mainFont)
-    btn_file = Button(text="Выбор файла",font=mainFont,command=choose_file,fg=_from_rgb((41,221,209)),background=_from_rgb((49,65,78)),height=3,width=20)
-    btn= Button(root, font=mainFont,command= lambda:save_file(),fg=_from_rgb((41,221,209)),background=_from_rgb((49,65,78)), text= "Сохранить файл",height=3,width=20)
+    choseLabel = Label(root, text='Select a document to check for corruption factors', fg=_from_rgb((41,221,209)),bg=_from_rgb((49,65,78)),font=mainFont)
+    btn_file = Button(text="File selection",font=mainFont,command=choose_file,fg=_from_rgb((41,221,209)),background=_from_rgb((49,65,78)),height=3,width=20)
+    btn= Button(root, font=mainFont,command= lambda:save_file(),fg=_from_rgb((41,221,209)),background=_from_rgb((49,65,78)), text= "Save file",height=3,width=20)
     v = DocViewer(root)
-    lf = Frame(root)
 
     v.pack(expand=1, fill="both",padx=50,pady=20,side='left')
     choseLabel.pack(pady=10,
@@ -102,17 +105,12 @@ def window():
                     fill='y')
     btn_file.pack(padx=30, pady=10,side='top',fill="x")
 
-
-
-    x = root.winfo_screenwidth()  # размер  по горизонтали
-    y = root.winfo_screenheight()  # размер по вертикали
-    root.geometry('{}x{}'.format(int(x), int(y)))
     root.mainloop()
 
 
 
 windowThread = threading.Thread(target=window)
-threadClassificate = threading.Thread(target=Predict)#создание потока для классификации
+threadClassificate = threading.Thread(target=Predict)#creating a stream for classification
 windowThread.start()
 
 
